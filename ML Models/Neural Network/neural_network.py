@@ -8,7 +8,7 @@ from keras.layers import Dense
 #Tuning
 from sklearn.model_selection import GridSearchCV
 from keras.wrappers.scikit_learn import KerasClassifier
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import mean_squared_error
 
 x_train = pd.DataFrame()    # genre, description, duration, directors, stars, votes, user rating, movie rating
 y_train = pd.DataFrame()    # ratings
@@ -19,8 +19,8 @@ def build_nn_model(num_neurons_1, num_neurons_2):
     nn = Sequential()
     nn.add(Dense(num_neurons_1, input_shape=[len(x_train.columns),], activation="relu"))
     nn.add(Dense(num_neurons_2, input_shape=[len(x_train.columns),], activation="relu"))
-    nn.add(Dense(len(np.unique(y_train.values)), activation="softmax"))
-    nn.compile(loss='sparse_categorical_crossentropy', optimizer='adam') # use sparse_categorical_crossentropy as the products are label-encoded as integers
+    nn.add(Dense(1, activation='linear'))
+    nn.compile(loss='mean_squared_error', optimizer='adam', metrics=['mse']) 
     return nn
 
 
@@ -44,5 +44,5 @@ grid_search.fit(x_train, y_train)
 optimal_clf = grid_search.best_estimator_
 
 Y_pred = optimal_clf.predict(x_test)
-acc_after_tuning = accuracy_score(y_test, Y_pred)
-print("test accuracy = {:.2%}".format(acc_after_tuning))
+mse_after_tuning = mean_squared_error(y_test, Y_pred)
+print("test accuracy = {:.2%}".format(mse_after_tuning))
