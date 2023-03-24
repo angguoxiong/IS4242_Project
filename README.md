@@ -6,14 +6,16 @@
 ├── Data Files 
 │   │
 │   ├── Model Files                 <- storing trained model pickle files
-│   │   ├── deepfm.pkl
-│   │   ├── neural_network.pkl
-│   │   ├── random_forest.pkl
-│   │   └── xgboost.pkl 
+│   │   ├── dfm.pkl
+│   │   ├── nn.h5
+│   │   ├── rf.pkl
+│   │   └── xgb.pkl 
 │   │
-│   └── Raw Data                    <- storing raw data for model training 
-│       ├── users_ratings.csv
-│       └── users_reviews.csv                                
+│   ├── Raw Data                    <- storing raw data to be processed 
+│   │    ├── users_ratings.csv
+│   │    └── users_reviews.csv
+│   │
+│   └── Training Data               <- storing processed data for model training
 │
 ├── Data Pre-Processing             <- preprocess raw data and conduct feature engineering
 │   ├── data_preprocessing.ipynb
