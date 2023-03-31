@@ -18,7 +18,8 @@
 │   └── Training Data               <- storing processed data for model training
 │
 ├── Data Pre-Processing             <- preprocess raw data and conduct feature engineering
-│   ├── data_preprocessing.ipynb
+|   ├── data_preprocessing.ipynb
+│   ├── eda.ipynb
 │   └── model_ensemble.ipynb
 │
 ├── ML Models                       <- training machine learning models
