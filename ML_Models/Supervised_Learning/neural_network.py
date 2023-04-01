@@ -5,7 +5,7 @@ import keras
 from keras.models import Sequential, load_model
 from keras.layers import Dense
 
-#Tuning and Cross Validation
+# Tuning and Cross Validation
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
 from keras.wrappers.scikit_learn import KerasRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error
@@ -41,12 +41,9 @@ def tune_neural_network_hyperparameter_with_cross_validation(x_train, y_train):
     tuned_nn.save('../../Data Files/Model Files/' + 'nn.h5')
 
 
-def evaluate_neural_network(x_test, y_test):
-    optimal_nn = load_model('../../Data Files/Model Files/' + 'nn.h5')  
+def run_neural_network(x_test):
+    optimal_nn = load_model('../../Data_Files/Model_Files/' + 'nn.h5')
 
-    y_pred = optimal_nn.predict(x_test)
-    mae = mean_absolute_error(y_test, y_pred)
-    rmse = math.sqrt(mean_squared_error(y_test, y_pred))
-
-    return 0.5 * (mae + rmse)
-
+    y_pred_nn = optimal_nn.predict(x_test)
+    
+    return y_pred_nn
