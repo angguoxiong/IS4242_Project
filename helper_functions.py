@@ -6,7 +6,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 
 
-def compressed_pickle(save_path, title, data):
+def compress_pickle(save_path, title, data):
     with bz2.BZ2File(save_path + title + '.pbz2', 'w') as f: 
         cPickle.dump(data, f)
 
