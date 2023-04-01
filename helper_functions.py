@@ -4,6 +4,8 @@ import _pickle as cPickle
 import pandas as pd
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
+from ML_Models.Supervised_Learning.neural_network import tune_neural_network_hyperparameter_with_cross_validation
+
 
 
 def compress_pickle(save_path, title, data):
@@ -14,6 +16,11 @@ def decompress_pickle(save_path, file):
     data = bz2.BZ2File(save_path + file + '.pbz2', 'rb')
     data = cPickle.load(data)
     return data
+
+
+def train_ML_models(x_train, y_train):
+    tune_neural_network_hyperparameter_with_cross_validation(x_train, y_train)
+
 
 
 def construct_pivot_table(df):
@@ -28,6 +35,7 @@ def construct_pivot_table(df):
     pivoted_table = df_rating.pivot(index='UserID',columns='Title',values='User_Rating').fillna(0)
 
     return pivoted_table
+
 
 
 def ensemble_supervised(y_pred_dfm, y_pred_nn, y_pred_rf, y_pred_xgb, y_test):
@@ -61,6 +69,7 @@ def ensemble_supervised(y_pred_dfm, y_pred_nn, y_pred_rf, y_pred_xgb, y_test):
 
     return combined_y_pred
     
+
 
 def ensemble_unsupervised(recos_knn, recos_mf):
     to_reco = 10
