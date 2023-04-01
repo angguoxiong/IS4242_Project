@@ -1,6 +1,19 @@
+import math
+import bz2
+import _pickle as cPickle
 import pandas as pd
 from sklearn.metrics import mean_absolute_error, mean_squared_error
-import math
+
+
+
+def compressed_pickle(save_path, title, data):
+    with bz2.BZ2File(save_path + title + '.pbz2', 'w') as f: 
+        cPickle.dump(data, f)
+
+def decompress_pickle(save_path, file):
+    data = bz2.BZ2File(save_path + file + '.pbz2', 'rb')
+    data = cPickle.load(data)
+    return data
 
 
 def construct_pivot_table(df):
@@ -28,10 +41,10 @@ def ensemble_supervised(y_pred_dfm, y_pred_nn, y_pred_rf, y_pred_xgb, y_test):
     rmse_rf = math.sqrt(mean_squared_error(y_pred_rf, y_test))
     rmse_xgb = math.sqrt(mean_squared_error(y_pred_xgb, y_test))
 
-    error_dfm = (mae_dfm+rmse_dfm)/2
-    error_nn = (mae_nn+rmse_nn)/2
-    error_rf = (mae_rf+rmse_rf)/2
-    error_xgb = (mae_xgb+rmse_xgb)/2
+    error_dfm = (mae_dfm + rmse_dfm) / 2
+    error_nn = (mae_nn + rmse_nn) / 2
+    error_rf = (mae_rf + rmse_rf) / 2
+    error_xgb = (mae_xgb + rmse_xgb) / 2
 
     ranked_error = [error_dfm, error_nn, error_rf, error_xgb].sort()
 
@@ -47,10 +60,6 @@ def ensemble_supervised(y_pred_dfm, y_pred_nn, y_pred_rf, y_pred_xgb, y_test):
         weights -= 0.1
 
     return combined_y_pred
-
-
-
-
     
 
 def ensemble_unsupervised(recos_knn, recos_mf):
