@@ -6,7 +6,7 @@ import xgboost as xgb
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
 
 # Importing Helper Functions
-from ...helper_functions import compress_pickle, decompress_pickle
+from helper_functions import compress_pickle, decompress_pickle
 
 
 def build_xgboost_model(verbosity):

@@ -25,7 +25,7 @@ def tune_neural_network_hyperparameter_with_cross_validation(x_train, y_train):
                     'num_neurons_2': [10, 30, 50],
                     'activation_fn': ['tanh', 'softplus', 'relu'],
                     'optimizer_fn': ['adam', 'sgd'],
-                    'input_dimensions': [len(x_train.columns),],
+                    'input_dimensions': [(len(x_train.columns),)],
                     'batch_size': [16, 64],
                     'epochs': [10]
                 }
