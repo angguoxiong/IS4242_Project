@@ -94,11 +94,11 @@ def tune_deepfm_with_cross_validation(x_train, y_train, x_test, y_test):
     best = fmin(fn=objective_function, space=param_space,
                 algo=tpe.suggest, max_evals=20, trials=trials)
     best_estimator = build_deepfm_model(lfc, dfc, best['dnn_hidden_units'], best['dnn_dropout'])
-    compress_pickle('../../Data_Files/Model_Files/', 'deepfm', best_estimator)
+    compress_pickle('Data_Files/Model_Files/', 'deepfm', best_estimator)
 
 
 def run_deepfm(x_test):
-    optimal_deepfm = decompress_pickle('../../Data_Files/Model_Files/', 'deepfm')
+    optimal_deepfm = decompress_pickle('Data_Files/Model_Files/', 'deepfm')
 
     y_pred_dfm = optimal_deepfm.predict(x_test)
 

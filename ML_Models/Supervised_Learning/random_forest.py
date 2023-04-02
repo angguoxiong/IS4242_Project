@@ -30,11 +30,11 @@ def tune_random_forest_with_cross_validation(x_train, y_train):
     grid_search.fit(x_train, y_train, verbose=0)
 
     tuned_rf = grid_search.best_estimator_
-    compress_pickle('../../Data Files/Model Files/', 'rf', tuned_rf)
+    compress_pickle('Data_Files/Model_Files/', 'rf', tuned_rf)
 
 
 def run_random_forest(x_test):
-    optimal_rf = decompress_pickle('../../Data Files/Model Files/' + 'rf')  
+    optimal_rf = decompress_pickle('Data_Files/Model_Files/' + 'rf')  
 
     y_pred_rf = optimal_rf.predict(x_test)
 

@@ -32,11 +32,11 @@ def tune_xgboost_with_cross_validation(x_train, y_train):
     estimator.fit(x_train, y_train, verbose=0)
     
     tuned_xgb = estimator.best_estimator_
-    compress_pickle('../../Data Files/Model Files/', 'xgb', tuned_xgb)
+    compress_pickle('Data_Files/Model_Files/', 'xgb', tuned_xgb)
 
 
 def run_xgboost(x_test):
-    optimal_xgb = decompress_pickle('../../Data Files/Model Files/' + 'xgb')  
+    optimal_xgb = decompress_pickle('Data_Files/Model_Files/' + 'xgb')  
 
     y_pred_xgb = optimal_xgb.predict(x_test)
 

@@ -37,11 +37,11 @@ def tune_neural_network_with_cross_validation(x_train, y_train):
     grid_search.fit(x_train, y_train, verbose=0)
 
     tuned_nn = grid_search.best_estimator_
-    tuned_nn.save('../../Data Files/Model Files/' + 'nn.h5')
+    tuned_nn.model.save('Data_Files/Model_Files/' + 'nn.h5')
 
 
 def run_neural_network(x_test):
-    optimal_nn = load_model('../../Data_Files/Model_Files/' + 'nn.h5')
+    optimal_nn = load_model('Data_Files/Model_Files/' + 'nn.h5')
 
     y_pred_nn = optimal_nn.predict(x_test)
     
