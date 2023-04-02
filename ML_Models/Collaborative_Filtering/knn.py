@@ -81,4 +81,4 @@ def run_user_based_knn_collab_filtering(ratings_df):
         
         user_recommendations[user_id] = movie_recommendations
 
-        return user_recommendations
+    return user_recommendations

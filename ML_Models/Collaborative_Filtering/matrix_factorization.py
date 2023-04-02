@@ -1,7 +1,21 @@
 import pandas as pd
 import numpy as np
 from sklearn.decomposition import NMF
-from ...helper_functions import construct_pivot_table
+
+
+
+def construct_pivot_table(df):
+    df_filtered = df[['UserID', 'Title', 'User_Rating']]
+    df_rating = df_filtered.copy()
+
+    df_rating['combined'] = df_rating['UserID'] + df_rating['Title']
+    counts = df_rating['combined'].value_counts()
+    unique_counts = counts[counts == 1]
+    df_rating = df_rating[df_rating['combined'].isin(unique_counts.index)]
+
+    pivoted_table = df_rating.pivot(index='UserID',columns='Title',values='User_Rating').fillna(0)
+
+    return pivoted_table
 
 
 def run_user_based_mf_collab_filtering(ratings_df):

@@ -23,21 +23,6 @@ def train_ML_models(x_train, y_train):
 
 
 
-def construct_pivot_table(df):
-    df_filtered = df[['UserID', 'Title', 'User_Rating']]
-    df_rating = df_filtered.copy()
-
-    # df_rating['combined'] = df_rating['UserID'] + df_rating['Title']
-    # counts = df_rating['combined'].value_counts()
-    # unique_counts = counts[counts == 1]
-    # df_rating = df_rating[df_rating['combined'].isin(unique_counts.index)]
-
-    pivoted_table = df_rating.pivot(index='UserID',columns='Title',values='User_Rating').fillna(0)
-
-    return pivoted_table
-
-
-
 def ensemble_supervised(y_pred_dfm, y_pred_nn, y_pred_rf, y_pred_xgb, y_test):
     mae_dfm = mean_absolute_error(y_pred_dfm, y_test)
     mae_nn = mean_absolute_error(y_pred_nn, y_test)
@@ -71,20 +56,47 @@ def ensemble_supervised(y_pred_dfm, y_pred_nn, y_pred_rf, y_pred_xgb, y_test):
     
 
 
-def ensemble_unsupervised(recos_knn, recos_mf):
+def ensemble_unsupervised(reco_set_1, reco_set_2, reco_set_3):
     to_reco = 10
     combined_reco = {}
-    common_users = recos_knn.keys() & recos_mf.keys()
-    unique_users = recos_knn.keys() ^ recos_mf.keys()
+    common_users = reco_set_1.keys() & reco_set_2.keys() & reco_set_3.keys()
+    unique_users = reco_set_1.keys() ^ reco_set_2.keys() ^ reco_set_3.keys()
 
     if common_users:
         for user in common_users:
-            combined_list = recos_knn[user] + recos_mf[user]
+            combined_list = reco_set_1[user] + reco_set_2[user] + reco_set_3[user]
             ranked_list = pd.Series(combined_list).value_counts().index.tolist()
             combined_reco[user] = ranked_list[:to_reco]
     
     if unique_users:    
-        combined_dict = {key: recos_knn.get(key, None) or recos_mf.get(key, None) for key in unique_users}
+        combined_dict = {key: reco_set_1.get(key, None) or reco_set_2.get(key, None) or reco_set_3.get(key, None) for key in unique_users}
         combined_reco.update(combined_dict)
 
     return combined_reco
+
+
+# def ensemble_unsupervised(recos_knn, recos_mf):
+#     to_reco = 10
+#     combined_reco = {}
+#     common_users = recos_knn.keys() & recos_mf.keys()
+#     unique_users = recos_knn.keys() ^ recos_mf.keys()
+
+#     print("common")
+#     print(common_users)
+
+#     if common_users:
+#         for user in common_users:
+#             combined_list = recos_knn[user] + recos_mf[user]
+#             ranked_list = pd.Series(combined_list).value_counts().index.tolist()
+#             print("ranked list")
+#             print(pd.Series(combined_list).value_counts())
+#             combined_reco[user] = ranked_list[:to_reco]
+    
+#     print("unique")
+#     print(unique_users)
+
+#     if unique_users:    
+#         combined_dict = {key: recos_knn.get(key, None) or recos_mf.get(key, None) for key in unique_users}
+#         combined_reco.update(combined_dict)
+
+#     return combined_reco
