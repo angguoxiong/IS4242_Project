@@ -1,9 +1,12 @@
 import pandas as pd
 import numpy as np
 from sklearn.decomposition import NMF
+from ...helper_functions import construct_pivot_table
 
 
-def run_user_based_mf_collab_filtering(pivoted_table):
+def run_user_based_mf_collab_filtering(ratings_df):
+
+    pivoted_table = construct_pivot_table(ratings_df)
     
     model = NMF(init='nndsvd',                      # using Nonnegative Double Singular Value Decomposition (NNDSVD) initialization - better for sparseness
                 n_components=len(pivoted_table),    # setting to the highest between min(n_samples, n_features)
@@ -16,12 +19,12 @@ def run_user_based_mf_collab_filtering(pivoted_table):
     ratings_matrix = model.components_
     predictions = np.dot(users_matrix, ratings_matrix)
 
-    threshold = 0.001
+    threshold = 1
     recommendations = abs(pivoted_table - predictions)
     filtered = (recommendations[recommendations>threshold]).dropna(how='all')
 
     all_recos = {}
-    to_reco = 10
+    to_reco = 20
 
     for index, row in filtered.iterrows():
         recos = row[row>0].sort_values(ascending=False)[:to_reco].index.tolist()
