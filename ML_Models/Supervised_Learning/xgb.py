@@ -14,21 +14,22 @@ def build_xgboost_model(verbosity):
     return xgboost
 
 
-def tune_xgboost_hyperparameter_with_cross_validation(x_train, y_train):
+def tune_xgboost_with_cross_validation(x_train, y_train):
     xgb_tuning = build_xgboost_model(0)
 
-    parameters = {  'max_depth': [3, 18, 1],
-                    'gamma': [1, 9],
-                    'reg_alpha' : [40, 180],
-                    'reg_lambda' : [0, 1],
-                    'colsample_bytree' : [0.5, 1],
-                    'min_child_weight' : [0, 10, 1],
-                }
+    parameters = {  
+        'max_depth': [3, 18, 1],
+        'gamma': [1, 9],
+        'reg_alpha' : [40, 180],
+        'reg_lambda' : [0, 1],
+        'colsample_bytree' : [0.5, 1],
+        'min_child_weight' : [0, 10, 1],
+    }
 
     skf = StratifiedKFold(n_splits=3, shuffle=True, random_state=1)
 
-    estimator = GridSearchCV(xgb_tuning, parameters, cv=skf)
-    estimator.fit(x_train, y_train)
+    estimator = GridSearchCV(estimator=xgb_tuning, param_grid=parameters, cv=skf, scoring='neg_mean_absolute_error', verbose=3)
+    estimator.fit(x_train, y_train, verbose=0)
     
     tuned_xgb = estimator.best_estimator_
     compress_pickle('../../Data Files/Model Files/', 'xgb', tuned_xgb)

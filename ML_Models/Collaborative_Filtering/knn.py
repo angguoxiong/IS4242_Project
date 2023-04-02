@@ -3,7 +3,7 @@ from surprise import KNNBaseline, Reader, Dataset
 
 
 
-def run_item_based_knn_collab_filtering(ratings_df):
+def run_item_based_knn_CF(ratings_df):
 
     reader = Reader(rating_scale=(0, 10))
     data = Dataset.load_from_df(ratings_df[['UserID', 'Title', 'User_Rating']], reader)
@@ -44,7 +44,7 @@ def run_item_based_knn_collab_filtering(ratings_df):
 
 
 
-def run_user_based_knn_collab_filtering(ratings_df):
+def run_user_based_knn_CF(ratings_df):
 
     reader = Reader(rating_scale=(0, 10))
     data = Dataset.load_from_df(ratings_df[['UserID', 'Title', 'User_Rating']], reader)

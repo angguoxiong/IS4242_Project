@@ -18,7 +18,7 @@ def construct_pivot_table(df):
     return pivoted_table
 
 
-def run_user_based_mf_collab_filtering(ratings_df):
+def run_user_based_mf_CF(ratings_df):
 
     pivoted_table = construct_pivot_table(ratings_df)
     

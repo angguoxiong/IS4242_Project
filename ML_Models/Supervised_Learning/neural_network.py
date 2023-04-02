@@ -18,17 +18,18 @@ def build_neural_network_model(num_neurons_1, num_neurons_2, input_dimensions, a
     return nn
 
 
-def tune_neural_network_hyperparameter_with_cross_validation(x_train, y_train):
+def tune_neural_network_with_cross_validation(x_train, y_train):
     model = KerasRegressor(build_fn=build_neural_network_model)
 
-    param_grid = {  'num_neurons_1': [30, 50],
-                    'num_neurons_2': [10, 30, 50],
-                    'activation_fn': ['tanh', 'softplus', 'relu'],
-                    'optimizer_fn': ['adam', 'sgd'],
-                    'input_dimensions': [(len(x_train.columns),)],
-                    'batch_size': [16, 64],
-                    'epochs': [10]
-                }
+    param_grid = {  
+        'num_neurons_1': [30, 50],
+        'num_neurons_2': [10, 30, 50],
+        'activation_fn': ['tanh', 'softplus', 'relu'],
+        'optimizer_fn': ['adam', 'sgd'],
+        'input_dimensions': [(len(x_train.columns),)],
+        'batch_size': [16, 64],
+        'epochs': [10]
+    }
 
     skf = StratifiedKFold(n_splits=3, shuffle=True, random_state=1)
 

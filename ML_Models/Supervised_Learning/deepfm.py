@@ -1,4 +1,3 @@
-import math
 
 from sklearn.preprocessing import LabelEncoder
 from deepctr_torch.inputs import SparseFeat, get_feature_names
@@ -8,15 +7,9 @@ import torch
 from deepctr_torch.models import DeepFM
 
 # Tuning 
-from sklearn.metrics import mean_squared_error, mean_absolute_error
-
 from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
-
-import warnings
-
 from helper_functions import compress_pickle, decompress_pickle
 
-warnings.filterwarnings("ignore")
 
 
 def build_deepfm_model(linear_feature_columns, dnn_feature_columns,
@@ -68,7 +61,7 @@ def label_encode_for_deepfm(x_train, x_test, y_train, y_test):
     return x_train, x_test, y_train, y_test, linear_feature_columns, dnn_feature_columns
 
 
-def tune_deepfm_hyperparameter_with_cross_validation(x_train, y_train, x_test, y_test):
+def tune_deepfm_with_cross_validation(x_train, y_train, x_test, y_test):
     encoded_x_train, encoded_x_test, encoded_y_train, encoded_y_test, lfc, dfc = label_encode_for_deepfm(x_train,
                                                                                                          x_test,
                                                                                                          y_train,
@@ -104,11 +97,9 @@ def tune_deepfm_hyperparameter_with_cross_validation(x_train, y_train, x_test, y
     compress_pickle('../../Data_Files/Model_Files/', 'deepfm', best_estimator)
 
 
-def evaluate_deepfm(x_test, y_test):
+def run_deepfm(x_test):
     optimal_deepfm = decompress_pickle('../../Data_Files/Model_Files/', 'deepfm')
 
-    y_pred = optimal_deepfm.predict(x_test)
-    mae = mean_absolute_error(y_test, y_pred)
-    rmse = math.sqrt(mean_squared_error(y_test, y_pred))
+    y_pred_dfm = optimal_deepfm.predict(x_test)
 
-    return 0.5 * (mae + rmse)
+    return y_pred_dfm
