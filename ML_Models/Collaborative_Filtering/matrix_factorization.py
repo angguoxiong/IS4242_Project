@@ -13,7 +13,7 @@ def construct_pivot_table(df):
     unique_counts = counts[counts == 1]
     df_rating = df_rating[df_rating['combined'].isin(unique_counts.index)]
 
-    pivoted_table = df_rating.pivot(index='UserID',columns='Title',values='User_Rating').fillna(0)
+    pivoted_table = df_rating.pivot(index='UserID', columns='Title', values='User_Rating').fillna(0)
 
     return pivoted_table
 

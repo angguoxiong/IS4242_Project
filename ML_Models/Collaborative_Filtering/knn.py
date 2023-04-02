@@ -16,6 +16,7 @@ def run_item_based_knn_CF(ratings_df):
     trainset = data.build_full_trainset()
     algo.fit(trainset)
 
+
     # Get the list of all item IDs
     all_item_ids = ratings_df['Title'].value_counts().index.tolist()
 
@@ -27,7 +28,8 @@ def run_item_based_knn_CF(ratings_df):
         item_neighbors = [trainset.to_raw_iid(inner_id) for inner_id in item_neighbors]
         item_recommendations[item_id] = item_neighbors
 
-    # Get the list of all item IDs
+
+    # Get the list of all user IDs
     all_user_ids = ratings_df['UserID'].value_counts().index.tolist()
 
     user_recommendations = {}
@@ -49,7 +51,7 @@ def run_user_based_knn_CF(ratings_df):
     reader = Reader(rating_scale=(0, 10))
     data = Dataset.load_from_df(ratings_df[['UserID', 'Title', 'User_Rating']], reader)
 
-    # Use item-based k-NN with cosine similarity
+    # Use user-based k-NN with cosine similarity
     sim_options = {'name': 'pearson_baseline', 'user_based': True}
     algo = KNNBaseline(k=10, sim_options=sim_options)
 
@@ -58,7 +60,7 @@ def run_user_based_knn_CF(ratings_df):
     algo.fit(trainset)
 
 
-    # Get the list of all item IDs
+    # Get the list of all user IDs
     all_user_ids = ratings_df['UserID'].value_counts().index.tolist()
 
     user_recommendations = {}

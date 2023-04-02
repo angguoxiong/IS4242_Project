@@ -18,10 +18,6 @@ def decompress_pickle(save_path, file):
     return data
 
 
-def train_ML_models(x_train, y_train):
-    tune_neural_network_hyperparameter_with_cross_validation(x_train, y_train)
-
-
 
 def ensemble_supervised(y_pred_dfm, y_pred_nn, y_pred_rf, y_pred_xgb, y_test):
     mae_dfm = mean_absolute_error(y_pred_dfm, y_test)
