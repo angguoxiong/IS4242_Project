@@ -9,16 +9,16 @@ from sklearn.model_selection import GridSearchCV, StratifiedKFold
 from helper_functions import compress_pickle, decompress_pickle
 
 
-def build_xgboost_model(verbosity):
-    xgboost = xgb.XGBRegressor(verbosity)
+def build_xgboost_model(v):
+    xgboost = xgb.XGBRegressor(verbosity=v)
     return xgboost
 
 
 def tune_xgboost_with_cross_validation(x_train, y_train):
-    xgb_tuning = build_xgboost_model(0)
+    xgb_tuning = build_xgboost_model(1)
 
     parameters = {  
-        'max_depth': [3, 18, 1],
+        'max_depth': [3, 18, 1], 
         'gamma': [1, 9],
         'reg_alpha' : [40, 180],
         'reg_lambda' : [0, 1],
@@ -29,7 +29,7 @@ def tune_xgboost_with_cross_validation(x_train, y_train):
     skf = StratifiedKFold(n_splits=3, shuffle=True, random_state=1)
 
     estimator = GridSearchCV(estimator=xgb_tuning, param_grid=parameters, cv=skf, scoring='neg_mean_absolute_error', verbose=3)
-    estimator.fit(x_train, y_train, verbose=0)
+    estimator.fit(x_train, y_train, verbose=1)
     
     tuned_xgb = estimator.best_estimator_
     compress_pickle('Data_Files/Model_Files/', 'xgb', tuned_xgb)
