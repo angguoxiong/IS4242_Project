@@ -32,11 +32,10 @@ def tune_xgboost_hyperparameter_with_cross_validation(x_train, y_train):
     estimator = GridSearchCV(xgb_tuning, parameters, cv=3)
     estimator.fit(x_train, y_train)
     tuned_xgb = estimator.best_estimator_
-    tuned_xgb.save('../../Data Files/Model Files/' + 'xgb.pkl', wb)
-    pickle.dump(tuned_xgb, open('../../Data Files/Model Files/' + 'xgb.pkl', 'wb'))
+    compress_pickle('../../Data Files/Model Files/', 'xgb', tuned_xgb)
 
 def evaluate_xgboost(x_test, y_test):
-    optimal_xgb = load_model('../../Data Files/Model Files/' + 'xgb.pkl')  
+    optimal_xgb = decompress_pickle('../../Data Files/Model Files/', 'xgb') 
 
     y_pred = optimal_xgb.predict(x_test)
     mae = mean_absolute_error(y_test, y_pred)
