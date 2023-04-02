@@ -1,18 +1,15 @@
-import math
 
 # Models
-import keras
 from keras.models import Sequential, load_model
 from keras.layers import Dense
 
 # Tuning and Cross Validation
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
 from keras.wrappers.scikit_learn import KerasRegressor
-from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 
 
-def build_neural_network_model(num_neurons_1, num_neurons_2, activation_fn, optimizer_fn, input_dimensions):
+def build_neural_network_model(num_neurons_1, num_neurons_2, input_dimensions, activation_fn, optimizer_fn):
     nn = Sequential()
     nn.add(Dense(num_neurons_1, input_shape=input_dimensions, activation=activation_fn))
     nn.add(Dense(num_neurons_2, input_shape=input_dimensions, activation=activation_fn))
@@ -24,13 +21,14 @@ def build_neural_network_model(num_neurons_1, num_neurons_2, activation_fn, opti
 def tune_neural_network_hyperparameter_with_cross_validation(x_train, y_train):
     model = KerasRegressor(build_fn=build_neural_network_model)
 
-    param_grid = {'num_neurons_1': [30, 50],
-                'num_neurons_2': [10, 30, 50],
-                'activation_fn': ['tanh', 'softplus', 'relu'],
-                'optimizer_fn': ['adam', 'sgd'],
-                'input_dimensions': [len(x_train.columns),],
-                'batch_size': [16, 64],
-                'epochs': [10]}
+    param_grid = {  'num_neurons_1': [30, 50],
+                    'num_neurons_2': [10, 30, 50],
+                    'activation_fn': ['tanh', 'softplus', 'relu'],
+                    'optimizer_fn': ['adam', 'sgd'],
+                    'input_dimensions': [len(x_train.columns),],
+                    'batch_size': [16, 64],
+                    'epochs': [10]
+                }
 
     skf = StratifiedKFold(n_splits=3, shuffle=True, random_state=1)
 
