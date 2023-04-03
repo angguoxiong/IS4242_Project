@@ -35,7 +35,10 @@ def ensemble_supervised(y_pred_dfm, y_pred_nn, y_pred_rf, y_pred_xgb):
         combined_y_pred += (weights * model_mapping.get(i))
         weights -= 0.1
 
-    return combined_y_pred
+    combined_ratings = combined_y_pred.reset_index()
+    ratings_df = combined_ratings.rename(columns={0: 'User_Rating'})
+
+    return ratings_df
     
 
 

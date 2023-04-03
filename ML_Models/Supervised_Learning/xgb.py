@@ -66,7 +66,10 @@ def evaluate_xgboost(model, x_test, y_test):
 def run_xgboost(x_test):
     optimal_xgb = decompress_pickle('Data_Files/Model_Files/' + 'xgb')  
 
-    y_pred_xgb = optimal_xgb.predict(x_test)
+    data = x_test.drop(['UserID', 'Title'], axis=1)
+    y_pred_xgb = optimal_xgb.predict(data)
 
-    return y_pred_xgb
+    results_xgb = pd.DataFrame(y_pred_xgb).set_index([x_test['UserID'], x_test['Title']])
+
+    return results_xgb
 

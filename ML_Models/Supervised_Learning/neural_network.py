@@ -71,7 +71,10 @@ def evaluate_neural_network(model, x_test, y_test):
 
 def run_neural_network(x_test):
     optimal_nn = load_model('Data_Files/Model_Files/' + 'nn.h5')
-
-    y_pred_nn = optimal_nn.predict(x_test)
     
-    return y_pred_nn
+    data = x_test.drop(['UserID', 'Title'], axis=1)
+    y_pred_nn = optimal_nn.predict(data)
+
+    results_nn = pd.DataFrame(y_pred_nn).set_index([x_test['UserID'], x_test['Title']])
+
+    return results_nn
