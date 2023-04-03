@@ -1,3 +1,5 @@
+import pandas as pd
+import math
 
 # Models
 from keras.models import Sequential, load_model
@@ -6,6 +8,8 @@ from keras.layers import Dense
 # Tuning and Cross Validation
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
 from keras.wrappers.scikit_learn import KerasRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+
 
 
 
@@ -18,7 +22,8 @@ def build_neural_network_model(num_neurons_1, num_neurons_2, input_dimensions, a
     return nn
 
 
-def tune_neural_network_with_cross_validation(x_train, y_train):
+
+def tune_neural_network_with_cross_validation(x_train, y_train, x_test, y_test):
     model = KerasRegressor(build_fn=build_neural_network_model)
 
     param_grid = {  
@@ -38,6 +43,30 @@ def tune_neural_network_with_cross_validation(x_train, y_train):
 
     tuned_nn = grid_search.best_estimator_
     tuned_nn.model.save('Data_Files/Model_Files/' + 'nn.h5')
+
+    evaluate_neural_network(tuned_nn, x_test, y_test)
+
+
+
+def evaluate_neural_network(model, x_test, y_test):
+    y_pred_nn = model.predict(x_test)
+
+    mae_nn = mean_absolute_error(y_pred_nn, y_test)
+    rmse_nn = math.sqrt(mean_squared_error(y_pred_nn, y_test))
+
+    error_nn = (mae_nn + rmse_nn) / 2
+
+
+    model_perf = pd.read_csv('Data_Files/Model_Files/model_performance.csv')
+
+    row = model_perf[model_perf['Model'] == 'NeuralNetwork']
+    row.loc[:, 'MAE'] = mae_nn
+    row.loc[:, 'RMSE'] = rmse_nn
+    row.loc[:, 'combined_error'] = error_nn
+    model_perf.update(row)
+    
+    model_perf.to_csv('Data_Files/Model_Files/model_performance.csv', index=False)
+
 
 
 def run_neural_network(x_test):
