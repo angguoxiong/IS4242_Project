@@ -1,4 +1,4 @@
-
+import pandas as pd
 # Models
 from sklearn.ensemble import RandomForestRegressor
 
@@ -27,7 +27,7 @@ def tune_random_forest_with_cross_validation(x_train, y_train):
     skf = StratifiedKFold(n_splits=3, shuffle=True, random_state=1)
 
     grid_search = GridSearchCV(estimator=rf_base, param_grid=param_grid, scoring='neg_mean_absolute_error', cv=skf, verbose=3)
-    grid_search.fit(x_train, y_train, verbose=0)
+    grid_search.fit(x_train, y_train)
 
     tuned_rf = grid_search.best_estimator_
     compress_pickle('Data_Files/Model_Files/', 'rf', tuned_rf)
@@ -39,4 +39,3 @@ def run_random_forest(x_test):
     y_pred_rf = optimal_rf.predict(x_test)
 
     return y_pred_rf
-
