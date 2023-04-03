@@ -17,33 +17,22 @@ def decompress_pickle(save_path, file):
 
 
 
-def ensemble_supervised(y_pred_dfm, y_pred_nn, y_pred_rf, y_pred_xgb, y_test):
-    mae_dfm = mean_absolute_error(y_pred_dfm, y_test)
-    mae_nn = mean_absolute_error(y_pred_nn, y_test)
-    mae_rf = mean_absolute_error(y_pred_rf, y_test)
-    mae_xgb = mean_absolute_error(y_pred_xgb, y_test)
+def ensemble_supervised(y_pred_dfm, y_pred_nn, y_pred_rf, y_pred_xgb):
 
-    rmse_dfm = math.sqrt(mean_squared_error(y_pred_dfm, y_test))
-    rmse_nn = math.sqrt(mean_squared_error(y_pred_nn, y_test))
-    rmse_rf = math.sqrt(mean_squared_error(y_pred_rf, y_test))
-    rmse_xgb = math.sqrt(mean_squared_error(y_pred_xgb, y_test))
-
-    error_dfm = (mae_dfm + rmse_dfm) / 2
-    error_nn = (mae_nn + rmse_nn) / 2
-    error_rf = (mae_rf + rmse_rf) / 2
-    error_xgb = (mae_xgb + rmse_xgb) / 2
-
-    ranked_error = [error_dfm, error_nn, error_rf, error_xgb].sort()
-
-    dict_mapping = {error_dfm: y_pred_dfm,
-                    error_nn: y_pred_nn,
-                    error_rf: y_pred_rf,
-                    error_xgb: y_pred_xgb}
+    model_perf = pd.read_csv('Data_Files/Model_Files/model_performance.csv')
+    model_rankings = model_perf.sort_values(by='combined_error').Model.tolist()
+    
+    model_mapping = {
+        'DeepFM': y_pred_dfm,
+        'NeuralNetwork': y_pred_nn,
+        'RandomForest': y_pred_rf,
+        'XGBoost': y_pred_xgb
+        }
 
     weights = 0.4
     combined_y_pred = 0
-    for i in ranked_error:
-        combined_y_pred = weights * dict_mapping.get(i)
+    for i in model_rankings:
+        combined_y_pred += (weights * model_mapping.get(i))
         weights -= 0.1
 
     return combined_y_pred
