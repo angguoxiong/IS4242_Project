@@ -34,6 +34,9 @@ def tune_xgboost_with_cross_validation(x_train, y_train, x_test, y_test):
 
     estimator = GridSearchCV(estimator=xgb_tuning, param_grid=parameters, cv=skf, scoring='neg_mean_absolute_error', verbose=3)
     estimator.fit(x_train, y_train, verbose=1)
+
+    print("################# Tuned XGBoost Parameters #################")
+    print(estimator.best_params_)
     
     tuned_xgb = estimator.best_estimator_
     compress_pickle('Data_Files/Model_Files/', 'xgb', tuned_xgb)
@@ -66,7 +69,10 @@ def evaluate_xgboost(model, x_test, y_test):
 def run_xgboost(x_test):
     optimal_xgb = decompress_pickle('Data_Files/Model_Files/' + 'xgb')  
 
-    y_pred_xgb = optimal_xgb.predict(x_test)
+    data = x_test.drop(['UserID', 'Title'], axis=1)
+    y_pred_xgb = optimal_xgb.predict(data)
 
-    return y_pred_xgb
+    results_xgb = pd.DataFrame(y_pred_xgb).set_index([x_test['UserID'], x_test['Title']])
+
+    return results_xgb
 

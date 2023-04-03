@@ -23,8 +23,8 @@ def run_user_based_mf_CF(ratings_df):
     pivoted_table = construct_pivot_table(ratings_df)
     
     model = NMF(init='nndsvd',                      # using Nonnegative Double Singular Value Decomposition (NNDSVD) initialization - better for sparseness
-                n_components=len(pivoted_table),    # setting to the highest between min(n_samples, n_features)
-                solver='mu',                        # using Multiplicative Update solver provides much higher predicted ratings as compared to Coordinate Descent solver.
+                n_components=5,                     
+                solver='cd',                        
                 l1_ratio=0.5,                       # using a combination of L1 and L2 regularization
                 max_iter=500,                       # setting high number to ensure convergence 
                 random_state=0)

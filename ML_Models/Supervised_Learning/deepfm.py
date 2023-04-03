@@ -129,6 +129,10 @@ def evaluate_deepfm(model, x_test, y_test):
 def run_deepfm(x_test):
     optimal_deepfm = decompress_pickle('Data_Files/Model_Files/', 'deepfm')
 
-    y_pred_dfm = optimal_deepfm.predict(x_test)
+    data = x_test.drop(['UserID', 'Title'], axis=1)
+    y_pred_dfm = optimal_deepfm.predict(data)
 
-    return y_pred_dfm
+    results_dfm = pd.DataFrame(y_pred_dfm).set_index([x_test['UserID'], x_test['Title']])
+
+    return results_dfm
+
