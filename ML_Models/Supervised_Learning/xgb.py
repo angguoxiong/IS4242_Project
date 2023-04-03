@@ -34,6 +34,9 @@ def tune_xgboost_with_cross_validation(x_train, y_train, x_test, y_test):
 
     estimator = GridSearchCV(estimator=xgb_tuning, param_grid=parameters, cv=skf, scoring='neg_mean_absolute_error', verbose=3)
     estimator.fit(x_train, y_train, verbose=1)
+
+    print("################# Tuned XGBoost Parameters #################")
+    print(estimator.best_params_)
     
     tuned_xgb = estimator.best_estimator_
     compress_pickle('Data_Files/Model_Files/', 'xgb', tuned_xgb)

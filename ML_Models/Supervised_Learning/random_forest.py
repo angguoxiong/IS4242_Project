@@ -32,6 +32,9 @@ def tune_random_forest_with_cross_validation(x_train, y_train, x_test, y_test):
     grid_search = GridSearchCV(estimator=rf_base, param_grid=param_grid, scoring='neg_mean_absolute_error', cv=skf, verbose=3)
     grid_search.fit(x_train, y_train)
 
+    print("################# Tuned RandomForest Parameters #################")
+    print(grid_search.best_params_)
+
     tuned_rf = grid_search.best_estimator_
     compress_pickle('Data_Files/Model_Files/', 'rf', tuned_rf)
     
