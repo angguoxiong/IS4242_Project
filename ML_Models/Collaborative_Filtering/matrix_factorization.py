@@ -38,7 +38,7 @@ def run_user_based_mf_CF(ratings_df):
     filtered = (recommendations[recommendations>threshold]).dropna(how='all')
 
     all_recos = {}
-    to_reco = 20
+    to_reco = 30
 
     for index, row in filtered.iterrows():
         recos = row[row>0].sort_values(ascending=False)[:to_reco].index.tolist()
