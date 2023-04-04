@@ -31,9 +31,31 @@ def build_deepfm_model(linear_feature_columns, dnn_feature_columns,
     return model
 
 
+def process_x(data):
+    for x in data:
+        if x.find("."):
+            old_column = x
+            new_column = x.replace(".", "_")
+            data.rename(columns={old_column: new_column}, inplace = True)
+    
+    sparse_features = data.columns.tolist()
+
+    for feat in sparse_features:
+        lbe = LabelEncoder()
+        data[feat] = lbe.fit_transform(data[feat])
+        
+    fixlen_feature_columns = [SparseFeat(feat, data[feat].nunique()) for feat in sparse_features]
+    linear_feature_columns = fixlen_feature_columns
+    dnn_feature_columns = fixlen_feature_columns
+    feature_names = get_feature_names(linear_feature_columns + dnn_feature_columns)
+
+    model_input = {name: data[name] for name in feature_names}
+    
+    return model_input
+
 
 def label_encode_for_deepfm(x_train, x_test, y_train, y_test):
-    
+
     x_data = pd.concat([x_train, x_test])
 
     sparse_data = x_data.iloc[:, 14:]
@@ -43,7 +65,7 @@ def label_encode_for_deepfm(x_train, x_test, y_train, y_test):
             old_column = column
             new_column = column.replace(".", "_")
             sparse_data.rename(columns={old_column: new_column}, inplace = True)
-        
+
     for x in x_train:
         if x.find("."):
             old_column = x
@@ -57,7 +79,7 @@ def label_encode_for_deepfm(x_train, x_test, y_train, y_test):
             x_test.rename(columns={old_column: new_column}, inplace = True)
 
     target = ['User_Rating']
-
+    
     sparse_features = sparse_data.columns.tolist()
     
     for feat in sparse_features:
@@ -68,7 +90,7 @@ def label_encode_for_deepfm(x_train, x_test, y_train, y_test):
     linear_feature_columns = fixlen_feature_columns
     dnn_feature_columns = fixlen_feature_columns
     feature_names = get_feature_names(linear_feature_columns + dnn_feature_columns)
-
+    
     train_model_input = {name: x_train[name] for name in feature_names}
     test_model_input = {name: x_test[name] for name in feature_names}
     
@@ -126,13 +148,15 @@ def evaluate_deepfm(model, x_test, y_test):
     model_perf.update(row)
     
     model_perf.to_csv('Data_Files/Model_Files/model_performance.csv', index=False)
-
-
+    
 
 def run_deepfm(x_test):
     optimal_deepfm = decompress_pickle('Data_Files/Model_Files/', 'deepfm')
 
     data = x_test.drop(['UserID', 'Title'], axis=1)
+    
+    data = process_x(data)
+    
     y_pred_dfm = optimal_deepfm.predict(data)
 
     results_dfm = pd.DataFrame(y_pred_dfm).set_index([x_test['UserID'], x_test['Title']])
