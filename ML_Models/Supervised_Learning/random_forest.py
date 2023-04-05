@@ -64,7 +64,7 @@ def evaluate_random_forest(model, x_test, y_test):
 
 
 def run_random_forest(x_test):
-    optimal_rf = decompress_pickle('Data_Files/Model_Files/' + 'rf')  
+    optimal_rf = decompress_pickle('Data_Files/Model_Files/', 'rf')  
 
     data = x_test.drop(['UserID', 'Title'], axis=1)
     y_pred_rf = optimal_rf.predict(data)

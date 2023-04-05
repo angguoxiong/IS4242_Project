@@ -67,7 +67,7 @@ def evaluate_xgboost(model, x_test, y_test):
 
 
 def run_xgboost(x_test):
-    optimal_xgb = decompress_pickle('Data_Files/Model_Files/' + 'xgb')  
+    optimal_xgb = decompress_pickle('Data_Files/Model_Files/', 'xgb')  
 
     data = x_test.drop(['UserID', 'Title'], axis=1)
     y_pred_xgb = optimal_xgb.predict(data)

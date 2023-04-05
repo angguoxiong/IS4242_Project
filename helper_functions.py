@@ -17,7 +17,7 @@ def decompress_pickle(save_path, file):
 
 
 
-def ensemble_supervised(y_pred_dfm, y_pred_nn, y_pred_rf, y_pred_xgb):
+def ensemble_supervised(y_pred_dfm, y_pred_nn, y_pred_rf, y_pred_xgb, user_ratings):
 
     model_perf = pd.read_csv('Data_Files/Model_Files/model_performance.csv')
     model_rankings = model_perf.sort_values(by='combined_error').Model.tolist()
@@ -36,7 +36,9 @@ def ensemble_supervised(y_pred_dfm, y_pred_nn, y_pred_rf, y_pred_xgb):
         weights -= 0.1
 
     combined_ratings = combined_y_pred.reset_index()
-    ratings_df = combined_ratings.rename(columns={0: 'User_Rating'})
+    predicted_ratings = combined_ratings.rename(columns={0: 'User_Rating'})
+
+    ratings_df = pd.concat([predicted_ratings, user_ratings])
 
     return ratings_df
     
