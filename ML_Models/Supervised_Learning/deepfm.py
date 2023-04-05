@@ -32,11 +32,14 @@ def build_deepfm_model(linear_feature_columns, dnn_feature_columns,
 
 
 def process_x(data):
+    """
     for x in data:
         if x.find("."):
             old_column = x
             new_column = x.replace(".", "_")
             data.rename(columns={old_column: new_column}, inplace = True)
+            
+    """
     
     sparse_features = data.columns.tolist()
 
@@ -58,7 +61,9 @@ def label_encode_for_deepfm(x_train, x_test, y_train, y_test):
 
     x_data = pd.concat([x_train, x_test])
 
-    sparse_data = x_data.iloc[:, 14:]
+    sparse_data = x_data.iloc[:, 14:47]
+    
+    """
 
     for column in sparse_data:
         if column.find(".") > -1:
@@ -77,6 +82,7 @@ def label_encode_for_deepfm(x_train, x_test, y_train, y_test):
             old_column = x
             new_column = x.replace(".", "_")
             x_test.rename(columns={old_column: new_column}, inplace = True)
+    """
 
     target = ['User_Rating']
     
