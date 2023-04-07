@@ -35,6 +35,13 @@ def tune_random_forest_with_cross_validation(x_train, y_train, x_test, y_test):
     print("################# Tuned RandomForest Parameters #################")
     print(grid_search.best_params_)
 
+    scores_df = pd.DataFrame(grid_search.cv_results_['params'])
+    scores_df['mean_test_score'] = -grid_search.cv_results_['mean_test_score']
+    scores_df['std_test_score'] = grid_search.cv_results_['std_test_score']
+    scores_df['mean_fit_time'] = grid_search.cv_results_['mean_fit_time']
+
+    scores_df.to_csv('Data_Files/Model_Files/' + 'grid_search_results_rf.csv')
+
     tuned_rf = grid_search.best_estimator_
     compress_pickle('Data_Files/Model_Files/', 'rf', tuned_rf)
     

@@ -22,23 +22,30 @@ def tune_xgboost_with_cross_validation(x_train, y_train, x_test, y_test):
     xgb_tuning = build_xgboost_model(1)
 
     parameters = {  
-        'max_depth': [3, 18, 1], 
-        'gamma': [1, 9],
-        'reg_alpha' : [40, 180],
-        'reg_lambda' : [0, 1],
-        'colsample_bytree' : [0.5, 1],
-        'min_child_weight' : [0, 10, 1],
+        'n_estimators': [50, 100, 300],
+        'learning_rate': [0.05, 0.1, 0.3],
+        'max_depth': [6, 12, 24], 
+        'gamma': [1, 10],
+        'reg_lambda' : [0.1, 1, 10],
+        'colsample_bytree' : [0.25, 0.5, 1],
     }
 
     skf = StratifiedKFold(n_splits=3, shuffle=True, random_state=1)
 
-    estimator = GridSearchCV(estimator=xgb_tuning, param_grid=parameters, cv=skf, scoring='neg_mean_absolute_error', verbose=3)
-    estimator.fit(x_train, y_train, verbose=1)
+    grid_search = GridSearchCV(estimator=xgb_tuning, param_grid=parameters, cv=skf, scoring='neg_mean_absolute_error', verbose=3)
+    grid_search.fit(x_train, y_train, verbose=1)
 
     print("################# Tuned XGBoost Parameters #################")
-    print(estimator.best_params_)
+    print(grid_search.best_params_)
+
+    scores_df = pd.DataFrame(grid_search.cv_results_['params'])
+    scores_df['mean_test_score'] = -grid_search.cv_results_['mean_test_score']
+    scores_df['std_test_score'] = grid_search.cv_results_['std_test_score']
+    scores_df['mean_fit_time'] = grid_search.cv_results_['mean_fit_time']
+
+    scores_df.to_csv('Data_Files/Model_Files/' + 'grid_search_results_xgb.csv')
     
-    tuned_xgb = estimator.best_estimator_
+    tuned_xgb = grid_search.best_estimator_
     compress_pickle('Data_Files/Model_Files/', 'xgb', tuned_xgb)
 
     evaluate_xgboost(tuned_xgb, x_test, y_test)

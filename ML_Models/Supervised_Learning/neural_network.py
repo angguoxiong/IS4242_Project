@@ -27,13 +27,13 @@ def tune_neural_network_with_cross_validation(x_train, y_train, x_test, y_test):
     model = KerasRegressor(build_fn=build_neural_network_model)
 
     param_grid = {  
-        'num_neurons_1': [30, 50],
-        'num_neurons_2': [10, 30, 50],
+        'num_neurons_1': [20, 50, 100],
+        'num_neurons_2': [20, 50],
         'activation_fn': ['tanh', 'softplus', 'relu'],
         'optimizer_fn': ['adam', 'sgd'],
         'input_dimensions': [(len(x_train.columns),)],
-        'batch_size': [16, 64],
-        'epochs': [10]
+        'batch_size': [8, 32],
+        'epochs': [5]
     }
 
     skf = StratifiedKFold(n_splits=3, shuffle=True, random_state=1)
@@ -43,6 +43,13 @@ def tune_neural_network_with_cross_validation(x_train, y_train, x_test, y_test):
 
     print("################# Tuned Neural Network Parameters #################")
     print(grid_search.best_params_)
+
+    scores_df = pd.DataFrame(grid_search.cv_results_['params'])
+    scores_df['mean_test_score'] = -grid_search.cv_results_['mean_test_score']
+    scores_df['std_test_score'] = grid_search.cv_results_['std_test_score']
+    scores_df['mean_fit_time'] = grid_search.cv_results_['mean_fit_time']
+
+    scores_df.to_csv('Data_Files/Model_Files/' + 'grid_search_results_nn.csv')
 
     tuned_nn = grid_search.best_estimator_
     tuned_nn.model.save('Data_Files/Model_Files/' + 'nn.h5')
