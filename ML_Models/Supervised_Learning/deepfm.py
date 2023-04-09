@@ -32,14 +32,6 @@ def build_deepfm_model(linear_feature_columns, dnn_feature_columns,
 
 
 def process_x(data):
-    """
-    for x in data:
-        if x.find("."):
-            old_column = x
-            new_column = x.replace(".", "_")
-            data.rename(columns={old_column: new_column}, inplace = True)
-            
-    """
     
     sparse_features = data.columns.tolist()
 
@@ -62,27 +54,6 @@ def label_encode_for_deepfm(x_train, x_test, y_train, y_test):
     x_data = pd.concat([x_train, x_test])
 
     sparse_data = x_data.iloc[:, 14:47]
-    
-    """
-
-    for column in sparse_data:
-        if column.find(".") > -1:
-            old_column = column
-            new_column = column.replace(".", "_")
-            sparse_data.rename(columns={old_column: new_column}, inplace = True)
-
-    for x in x_train:
-        if x.find("."):
-            old_column = x
-            new_column = x.replace(".", "_")
-            x_train.rename(columns={old_column: new_column}, inplace = True)
-
-    for x in x_test:
-        if x.find("."):
-            old_column = x
-            new_column = x.replace(".", "_")
-            x_test.rename(columns={old_column: new_column}, inplace = True)
-    """
 
     target = ['User_Rating']
     
@@ -100,19 +71,26 @@ def label_encode_for_deepfm(x_train, x_test, y_train, y_test):
     train_model_input = {name: x_train[name] for name in feature_names}
     test_model_input = {name: x_test[name] for name in feature_names}
     
+    #print(x_test)
+    
     return train_model_input, test_model_input, y_train, y_test, linear_feature_columns, dnn_feature_columns
 
 
 def tune_deepfm_with_cross_validation(x_train, y_train, x_test, y_test):
     encoded_x_train, encoded_x_test, y_train, y_test, lfc, dfc = label_encode_for_deepfm(x_train, x_test, y_train, y_test)
+    
+    #print(encoded_x_test)
 
     def objective_function(param_space):
         dnn_hidden_units = param_space["dnn_hidden_units"]
         dnn_dropout = param_space["dnn_dropout"]
 
         model = build_deepfm_model(lfc, dfc, dnn_hidden_units, dnn_dropout)
+        
+        model.fit(encoded_x_train, y_train['User_Rating'].values, batch_size=256, epochs=3, verbose=2, validation_split=0.2)
 
         pred_ans = model.predict(encoded_x_test, 256)
+        
         mse = round(mean_squared_error(y_test['User_Rating'].values, pred_ans), 4)
 
         return {
@@ -129,19 +107,31 @@ def tune_deepfm_with_cross_validation(x_train, y_train, x_test, y_test):
 
     best = fmin(fn=objective_function, space=param_space,
                 algo=tpe.suggest, max_evals=20, trials=trials)
+    
+    print("################# Tuned DeepFM Parameters #################")
+    print(best)
+    
+    scores_df = pd.DataFrame(trials)
+    scores_df.to_csv('Data_Files/Model_Files/' + 'fmin_results_deepfm.csv')
 
     best_estimator = build_deepfm_model(lfc, dfc, [best['dnn_hidden_units']], best['dnn_dropout'])
     compress_pickle('Data_Files/Model_Files/', 'deepfm', best_estimator)
 
-    evaluate_deepfm(best_estimator, encoded_x_test, y_test)
+    evaluate_deepfm(best_estimator, encoded_x_test, y_test['User_Rating'].values)
 
 
 
-def evaluate_deepfm(model, x_test, y_test):
+def evaluate_deepfm(model, x_test, y_test):    
+    
     y_pred_dfm = model.predict(x_test)
+    
+    target = ['User_Rating']
 
+    print(y_pred_dfm)
     mae_dfm = mean_absolute_error(y_pred_dfm, y_test)
+    print('mae', mae_dfm)
     rmse_dfm = math.sqrt(mean_squared_error(y_pred_dfm, y_test))
+    print('rmse', rmse_dfm)
 
     error_dfm = (mae_dfm + rmse_dfm) / 2
 
